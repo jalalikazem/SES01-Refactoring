@@ -56,4 +56,22 @@ public class Student {
 	public String toString() {
 		return name;
 	}
+
+	public boolean hasPassed(Course course){
+		for(StudyRecord studyRecord : getStudyRecords()){
+			if(studyRecord.getCse().getCourse().equals(course) && studyRecord.getGrade() >= 10)
+				return true;
+		}
+		return false;
+	}
+
+	public double calculateGpa() {
+		double points = 0;
+		int totalUnits = 0;
+		for (StudyRecord sr : getStudyRecords()) {
+			points += sr.getGrade() * sr.getCourse().getUnits();
+			totalUnits += sr.getCourse().getUnits();
+		}
+		return points / totalUnits;
+	}
 }
