@@ -7,22 +7,17 @@ import domain.exceptions.EnrollmentRulesViolationException;
 
 public class EnrollCtrl {
 	public void enroll(Student s, List<CSE> courses) throws EnrollmentRulesViolationException {
-        Map<Term, Map<Course, Double>> transcript = s.getTranscript();
 		for (CSE o : courses) {
-            for (Map.Entry<Term, Map<Course, Double>> tr : transcript.entrySet()) {
-                for (Map.Entry<Course, Double> r : tr.getValue().entrySet()) {
-                    if (r.getKey().equals(o.getCourse()) && r.getValue() >= 10)
-                        throw new EnrollmentRulesViolationException(String.format("The student has already passed %s", o.getCourse().getName()));
-                }
+            for (StudyRecord sr : s.getStudyRecords()) {
+                if (sr.getCse().getCourse().equals(o.getCourse()) && sr.getGrade() >= 10)
+                    throw new EnrollmentRulesViolationException(String.format("The student has already passed %s", o.getCourse().getName()));
             }
 			List<Course> prereqs = o.getCourse().getPrerequisites();
 			nextPre:
 			for (Course pre : prereqs) {
-                for (Map.Entry<Term, Map<Course, Double>> tr : transcript.entrySet()) {
-                    for (Map.Entry<Course, Double> r : tr.getValue().entrySet()) {
-                        if (r.getKey().equals(pre) && r.getValue() >= 10)
-                            continue nextPre;
-                    }
+                for (StudyRecord sr : s.getStudyRecords()) {
+                    if (sr.getCse().getCourse().equals(pre) && sr.getGrade() >= 10)
+                        continue nextPre;
 				}
 				throw new EnrollmentRulesViolationException(String.format("The student has not passed %s as a prerequisite of %s", pre.getName(), o.getCourse().getName()));
 			}
@@ -40,11 +35,9 @@ public class EnrollCtrl {
 			unitsRequested += o.getCourse().getUnits();
 		double points = 0;
 		int totalUnits = 0;
-        for (Map.Entry<Term, Map<Course, Double>> tr : transcript.entrySet()) {
-            for (Map.Entry<Course, Double> r : tr.getValue().entrySet()) {
-                points += r.getValue() * r.getKey().getUnits();
-                totalUnits += r.getKey().getUnits();
-            }
+        for (StudyRecord sr : s.getStudyRecords()) {
+			points += sr.getGrade() * sr.getCourse().getUnits();
+			totalUnits += sr.getCourse().getUnits();
 		}
 		double gpa = points / totalUnits;
 		if ((gpa < 12 && unitsRequested > 14) ||

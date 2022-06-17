@@ -6,6 +6,17 @@ public class CSE {
 	private int section;
 	private Date examDate;
 
+	private Term term;
+
+	public CSE(Course course, Term term) {
+		this.course = course;
+		this.section = 1;
+		this.examDate = null;
+		this.term = term;
+	}
+
+	public Term getTerm() { return term; }
+
 	public CSE(Course course) {
 		this.course = course;
 		this.section = 1;
@@ -23,7 +34,7 @@ public class CSE {
 		this.section = section;
 		this.examDate = examDate;
 	}
-	
+
 	public Course getCourse() {
 		return course;
 	}

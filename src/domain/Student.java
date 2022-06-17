@@ -1,8 +1,6 @@
 package domain;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Student {
 	private String id;
@@ -16,13 +14,14 @@ public class Student {
         Course course;
 	    int section;
     }
-	private Map<Term, Map<Course, Double>> transcript;
+
+	private List<StudyRecord> studyRecords;
 	private List<CourseSection> currentTerm;
 
 	public Student(String id, String name) {
 		this.id = id;
 		this.name = name;
-		this.transcript = new HashMap<>();
+		this.studyRecords = new ArrayList<>();
 		this.currentTerm = new ArrayList<>();
 	}
 	
@@ -30,14 +29,16 @@ public class Student {
 		currentTerm.add(new CourseSection(c, section));
 	}
 
-	public Map<Term, Map<Course, Double>> getTranscript() {
-		return transcript;
+	public List<StudyRecord> getStudyRecords() {
+		return studyRecords;
 	}
 
-	public void addTranscriptRecord(Course course, Term term, double grade) {
-	    if (!transcript.containsKey(term))
-	        transcript.put(term, new HashMap<>());
-	    transcript.get(term).put(course, grade);
+	public void addStudyRecordItem(Course course, Term term, double grade) {
+		for(StudyRecord stdRecord : getStudyRecords()){
+			if(stdRecord.getCse().getCourse().equals(course) && stdRecord.getCse().getTerm().equals(term))
+				stdRecord.setGrade(grade);
+		}
+		getStudyRecords().add(new StudyRecord(course, term, grade));
     }
 
     public List<CourseSection> getCurrentTerm() {
